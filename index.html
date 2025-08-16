@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DramaBox - Continuar Viendo</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --primary:#ff2b59;
+    --primary2:#ff2b59;
+    --txt:#fff;
+    --muted:#bfbfbf;
+    --bg:#0c0c0f;
+    --card:rgba(255,255,255,.06);
+    --border:rgba(255,255,255,.12);
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+    color:var(--txt);
+    background:linear-gradient(180deg,#000,#111 35%,#141414 100%);
+    min-height:100svh;
+    padding-bottom:120px;
+  }
+
+  /* Header */
+  .header{
+    position:sticky;top:0;z-index:1000;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;
+    background:linear-gradient(180deg,#f0f0f0, #f0f0f0 100%);
+    border-bottom:1px solid #f0f0f0;
+  }
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{
+    width:45px;
+    height:40px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background:url('assets/logo.png') center/cover no-repeat;
+    /* box-shadow:0 3px 10px rgba(255,78,106,.35); */
+}
+
+  /* .logo::after{
+    content:"▶";font-size:14px;color:#fff;font-weight:700;
+    transform:translateX(1px);
+  } */
+  .app-title{line-height:1}
+  .app-title b{color:#111;font-size:15px}
+  .app-title span{color:#666;font-size:12px}
+  .open-btn{
+    border:0;border-radius:999px;padding:8px 18px;font-weight:700;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    color:#fff;cursor:pointer
+  }
+
+  .container{padding:14px 14px 0}
+
+  /* Hero principal */
+  .hero{
+    position:relative;margin-bottom:14px;border-radius:14px;overflow:hidden;
+    background:#000;
+  }
+  .hero-bg{
+    height:260px;
+    background:url('assets/fondo.png') center/cover no-repeat;
+    filter:blur(3px) brightness(.70);
+    transform:scale(1.1);
+  }
+  .hero-overlay{
+    position:absolute;inset:0;display:grid;place-items:center;
+    padding:-5px;
+  }
+  .poster{
+    position:relative;width:min(52vw,200px);aspect-ratio:3/4;border-radius:12px;
+    background:url('assets/1.png') center/cover no-repeat;
+    box-shadow:0 12px 28px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08) inset;
+  }
+  .play{
+    position:absolute;inset:auto auto 10px 10px;
+    background:rgba(0,0,0,.75);color:#fff;font-size:12px;
+    padding:6px 9px;border-radius:999px;display:flex;gap:6px;align-items:center
+  }
+  .play::before{content:"▶";font-size:12px}
+
+  .video-info{padding:12px 2px;text-align:center}
+  .video-title{font-weight:700;font-size:18px;margin-bottom:8px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
+  .tag{
+    font-size:11px;color:#ddd;border:1px solid var(--border);
+    background:rgba(255,255,255,.08);border-radius:999px;padding:4px 10px
+  }
+  .desc{font-size:13px;color:#a8a8a8}
+
+  /* Recomendaciones */
+  .section-title{margin:16px 0 10px;font-weight:700}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    width:100%;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    overflow:hidden;cursor:pointer;transition:transform .15s ease;
+    width:100%;
+  }
+  .card:hover{transform:translateY(-2px)}
+  .thumb{width:100%;aspect-ratio:3/4;background:#333 center/cover no-repeat}
+  .c-meta{padding:8px}
+  .c-title{
+    font-size:11.5px;line-height:1.15;color:#fff;margin-bottom:6px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+  }
+  .c-tag{font-size:10px;color:#cfcfcf;background:rgba(255,255,255,.09);
+    border:1px solid var(--border);padding:2px 6px;border-radius:6px;display:inline-block}
+
+  /* Botón fijo */
+  .fixed{position:fixed;left:14px;right:14px;bottom:18px;z-index:1000;text-align:center}
+  .cta{
+    width:100%;max-width:480px;margin-inline:auto;
+    border:0;border-radius:999px;padding:15px 26px;font-weight:800;font-size:16px;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;
+    box-shadow:0 10px 26px rgba(255,78,106,.45);cursor:pointer;position:relative;
+  }
+  .hand{position:absolute;right:18px;top:50%;translate:0 -50%;animation:hand 1.5s infinite}
+  @keyframes hand{0%{translate:0 -50%}50%{translate:-3px -50%}100%{translate:0 -50%}}
+
+  /* Responsive */
+  @media (max-width:420px){
+    .hero-bg{height:220px}
+    .poster{width:165px}
+  }
+  @media (max-width:320px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;top:76px;left:50%;translate:-50% 0;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    color:#fff;padding:10px 14px;border-radius:999px;font-weight:700;
+    box-shadow:0 8px 22px rgba(255,78,106,.35);
+    animation:fade .25s ease-out
+  }
+  @keyframes fade{from{opacity:0;translate:-50% -8px}to{opacity:1;translate:-50% 0}}
+</style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand" onclick="downloadApp()">
+      <div class="logo"></div>
+      <div class="app-title">
+        <b>DramaBox</b><br/>
+        <span>Continuar Viendo</span>
+      </div>
+    </div>
+    <button class="open-btn" onclick="downloadApp()">Descargar</button>
+  </header>
+
+  <main class="container">
+    <!-- HERO con fondo y poster -->
+    <section class="hero" onclick="downloadApp()">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay">
+        <div class="poster">
+          <!-- <div class="play">5.0K Vistas</div> -->
+        </div>
+      </div>
+    </section>
+
+    <section class="video-info">
+      <h1 class="video-title">El Dulce Sabor del Triunfo (Doblado)</h1>
+      <div class="tags">
+        <span class="tag">Contraataque</span>
+        <span class="tag">Identidad Oculta</span>
+      </div>
+      <p class="desc">Nació y creció en aislamiento, Fiona Santos no solo heredó las extraordinarias habilidades...</p>
+    </section>
+
+    <!-- Recomendaciones -->
+<h2 class="section-title">Le Puede Gustar</h2>
+<section class="grid">
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/2.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Coronada por su amor (Doblado)</div>
+      <div class="c-tag">Bebé Secreto</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/3.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">El Regreso del Hombre…</div>
+      <div class="c-tag">Contraataque</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/4.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Condenado por los recuerdos</div>
+      <div class="c-tag">Persecución de E...</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/5.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Divorciados en la Boda</div>
+      <div class="c-tag">Identidad Equivo...</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/6.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Hasta que nos volvi a ser yo misma</div>
+      <div class="c-tag">Identidad Oculta</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/7.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Tu rostro, siempre en mi...</div>
+      <div class="c-tag">Idetidad Equivo...</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/8.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">¡Animate,cariño!</div>
+      <div class="c-tag">Amor de la infan...</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/9.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Casada por error, querida para...</div>
+      <div class="c-tag">Amor Despues d...</div>
+    </div>
+  </article>
+
+  <article class="card" onclick="downloadApp()">
+    <div class="thumb" style="background-image:url('assets/10.jpg')"></div>
+    <div class="c-meta">
+      <div class="c-title">Srta. Ramirez, vuelve a mi lad...</div>
+      <div class="c-tag">Amor Despues d...</div>
+    </div>
+  </article>
+
+  
+</section>
+
+  
+
+  <!-- Botón inferior -->
+  <div class="fixed">
+    <button class="cta" onclick="downloadApp()">
+      Descargar DramaBox
+      <span class="hand">👆</span>
+    </button>
+  </div>
+
+<script>
+  function downloadApp(){
+    const a=document.createElement('a');
+    a.href='./DramaBox.apk'; a.download='DramaBox.apk';
+    document.body.appendChild(a); a.click(); a.remove();
+    showToast('📱 Descargando DramaBox.apk…');
+  }
+  function showToast(t){
+    const el=document.createElement('div'); el.className='toast'; el.textContent=t;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),3000);
+  }
+</script>
+</body>
+</html>
